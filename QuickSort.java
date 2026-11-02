@@ -60,45 +60,6 @@ public class QuickSort {
         return true;
     }
 
-    public static void bubbleSort(double[] a, boolean ascending) {
-        for (int i = 0; i < a.length - 1; i++) {
-            boolean swapped = false;
-            for (int j = 0; j < a.length - 1 - i; j++) {
-                if (isBefore(a[j + 1], a[j], ascending)) {
-                    swap(a, j, j + 1);
-                    swapped = true;
-                }
-            }
-            if (!swapped) {
-                break;
-            }
-        }
-    }
-
-    public static void selectionSort(double[] a, boolean ascending) {
-        for (int i = 0; i < a.length - 1; i++) {
-            int best = i;
-            for (int j = i + 1; j < a.length; j++) {
-                if (isBefore(a[j], a[best], ascending)) {
-                    best = j;
-                }
-            }
-            swap(a, i, best);
-        }
-    }
-
-    public static void insertionSort(double[] a, boolean ascending) {
-        for (int i = 1; i < a.length; i++) {
-            double key = a[i];
-            int j = i - 1;
-            while (j >= 0 && isBefore(key, a[j], ascending)) {
-                a[j + 1] = a[j];
-                j--;
-            }
-            a[j + 1] = key;
-        }
-    }
-
     private static double[] randomArray(int size, Random random) {
         double[] a = new double[size];
         for (int i = 0; i < size; i++) {
@@ -119,7 +80,7 @@ public class QuickSort {
         long end = System.nanoTime();
 
         if (!isSorted(copy, ascending)) {
-            throw new IllegalStateException("Масив не відсортовано!");
+            throw new IllegalStateException("Massive is not sorted!");
         }
         return (end - start) / 1_000_000.0;
     }
@@ -130,12 +91,9 @@ public class QuickSort {
         double[] desc = demo.clone();
         quickSort(asc, true);
         quickSort(desc, false);
-        System.out.println("Початковий:   " + Arrays.toString(demo));
-        System.out.println("За зростанням: " + Arrays.toString(asc)
-                + " -> впорядкований: " + isSorted(asc, true));
-        System.out.println("За спаданням:  " + Arrays.toString(desc)
-                + " -> впорядкований: " + isSorted(desc, false));
-        System.out.println("Перевірка на невпорядкованому масиві: " + isSorted(demo, true));
+        System.out.println("First:   " + Arrays.toString(demo));
+        System.out.println("Ascending: " + Arrays.toString(asc));
+        System.out.println("Descending:  " + Arrays.toString(desc));
         System.out.println();
 
         int[] sizes = {1_000, 10_000, 100_000};
@@ -144,29 +102,24 @@ public class QuickSort {
         double[] warm = randomArray(5_000, random);
         for (int i = 0; i < 5; i++) {
             measure(QuickSort::quickSort, warm, true);
-            measure(QuickSort::bubbleSort, warm, true);
-            measure(QuickSort::selectionSort, warm, true);
-            measure(QuickSort::insertionSort, warm, true);
         }
 
         for (boolean ascending : new boolean[]{true, false}) {
-            System.out.println(ascending ? "=== За зростанням ===" : "=== За спаданням ===");
-            System.out.printf("%-10s %12s %12s %12s %12s%n",
-                    "N", "QuickSort", "Bubble", "Selection", "Insertion");
+            System.out.println(ascending ? "=== Ascending ===" : "=== Descending ===");
+            System.out.printf("%-10s %12s%n",
+                    "N", "QuickSort");
 
             for (int size : sizes) {
                 double[] data = randomArray(size, random);
 
                 double quick = measure(QuickSort::quickSort, data, ascending);
-                double bubble = measure(QuickSort::bubbleSort, data, ascending);
-                double selection = measure(QuickSort::selectionSort, data, ascending);
-                double insertion = measure(QuickSort::insertionSort, data, ascending);
 
                 System.out.println(String.format(Locale.ROOT,
-                        "%-10d %9.3f ms %9.3f ms %9.3f ms %9.3f ms",
-                        size, quick, bubble, selection, insertion));
+                        "%-10d %9.3f ms",
+                        size, quick));
             }
             System.out.println();
         }
     }
 }
+
